@@ -1,19 +1,28 @@
 'use client';
 
 import React from 'react';
-import { Box, Card, CardContent, Divider, Stack, Typography, Chip, useTheme } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  Divider,
+  Stack,
+  Typography,
+  Chip,
+  useTheme,
+  Tooltip,
+} from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import NotesIcon from '@mui/icons-material/Notes';
 import Link from 'next/link';
 import { UseQueryResult } from '@tanstack/react-query';
 
 import { getStatusColor, getStatusLabel, getPriorityColor } from '@/lib/utils/submission-utils';
 import { formatDateTime } from '@/lib/utils/date-utils';
-// import { SubmissionsPagination } from '../SubmissionsPagination';
 import { PaginatedResponse, SubmissionListItem } from '@/lib/types';
 import { Button } from '@mui/material';
-// import { ApiErrorState } from '../ApiErrorState';
 import { SubmissionCardSkeleton } from '../ui/skeletons';
 import { ApiErrorState, SubmissionsPagination } from '../ui';
-// import { SubmissionCardSkeleton } from '../SubmissionCardSkeleton';
 
 interface SubmissionsListProps {
   page: string;
@@ -103,12 +112,13 @@ function SubmissionsListComponent({
                     }}
                   >
                     <CardContent sx={{ px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 2 } }}>
-                      <Stack spacing={1}>
+                      <Stack spacing={2}>
+                        {/* Header Row: Company & Status/Priority */}
                         <Stack
                           direction={{ xs: 'column', sm: 'row' }}
                           justifyContent="space-between"
-                          alignItems={{ xs: 'flex-start', sm: 'flex-start' }}
-                          spacing={{ xs: 1, sm: 2 }}
+                          alignItems={{ xs: 'flex-start', sm: 'center' }}
+                          spacing={1}
                         >
                           <Box flex={1}>
                             <Typography
@@ -121,31 +131,12 @@ function SubmissionsListComponent({
                             >
                               {item.company.legalName}
                             </Typography>
-                            <Typography
-                              sx={{
-                                fontSize: { xs: '0.8rem', sm: '.9rem' },
-                                wordBreak: 'break-word',
-                                mt: 0.5,
-                                color: 'text.secondary',
-                              }}
-                            >
-                              {item.summary}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                fontSize: { xs: '0.75rem', sm: '0.8rem' },
-                                color: 'text.secondary',
-                                mt: 1,
-                              }}
-                            >
-                              Created: {formatDateTime(item.createdAt)}
-                            </Typography>
                           </Box>
-
                           <Stack
-                            direction={{ xs: 'column', sm: 'row' }}
+                            direction={{ xs: 'row' }}
                             spacing={1}
-                            alignItems={{ xs: 'flex-start', sm: 'center' }}
+                            alignItems="center"
+                            sx={{ flexShrink: 0 }}
                           >
                             <Box display="flex" alignItems="center" gap={1}>
                               <Typography variant="body2" color="text.secondary">
@@ -176,57 +167,101 @@ function SubmissionsListComponent({
                           </Stack>
                         </Stack>
 
+                        {/* Summary */}
+                        <Typography
+                          sx={{
+                            fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                            wordBreak: 'break-word',
+                            color: 'text.secondary',
+                          }}
+                        >
+                          {item.summary}
+                        </Typography>
+
                         <Divider />
 
-                        <Box sx={{ display: { xs: 'block', sm: 'inline' } }}>
-                          <Typography component="span" color="text.secondary" variant="body2">
-                            Broker:{' '}
-                          </Typography>
-                          <Typography component="span" variant="body2">
-                            {item.broker.name}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ display: { xs: 'block', sm: 'inline' } }}>
-                          <Typography component="span" color="text.secondary" variant="body2">
-                            Owner:{' '}
-                          </Typography>
-                          <Typography component="span" variant="body2">
-                            {item.owner.fullName}
-                          </Typography>
-                        </Box>
-
-                        <Box>
-                          <Typography component="span" color="text.secondary" variant="body2">
-                            Number of Document(s):{' '}
-                          </Typography>
-                          <Typography component="span" variant="body2">
-                            {item.documentCount}
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography component="span" color="text.secondary" variant="body2">
-                            Number of Notes(s):{' '}
-                          </Typography>
-                          <Typography component="span" variant="body2">
-                            {item.noteCount}
-                          </Typography>
-                        </Box>
-
-                        {item.latestNote && (
-                          <Box>
-                            <Typography component="span" color="text.secondary" variant="body2">
-                              Latest Note:{' '}
+                        {/* Info Row: Broker, Owner, Date */}
+                        <Stack
+                          direction={{ xs: 'column', sm: 'row' }}
+                          spacing={{ xs: 2, sm: 3 }}
+                          divider={
+                            <Divider
+                              orientation="vertical"
+                              flexItem
+                              sx={{ display: { xs: 'none', sm: 'block' } }}
+                            />
+                          }
+                        >
+                          <Box flex={1}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                              Broker
                             </Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {item.broker.name}
+                            </Typography>
+                          </Box>
+                          <Box flex={1}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                              Owner
+                            </Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {item.owner.fullName}
+                            </Typography>
+                          </Box>
+                          <Box flex={1}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                              Created
+                            </Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {formatDateTime(item.createdAt)}
+                            </Typography>
+                          </Box>
+                        </Stack>
+
+                        {/* Document & Notes with Icons */}
+                        <Stack direction="row" spacing={3}>
+                          <Tooltip title={`${item.documentCount} document(s)`}>
+                            <Box display="flex" alignItems="center" gap={0.75}>
+                              <DescriptionIcon fontSize="small" color="primary" />
+                              <Typography variant="body2" color="text.secondary">
+                                {item.documentCount}
+                              </Typography>
+                            </Box>
+                          </Tooltip>
+                          <Tooltip title={`${item.noteCount} note(s)`}>
+                            <Box display="flex" alignItems="center" gap={0.75}>
+                              <NotesIcon fontSize="small" color="primary" />
+                              <Typography variant="body2" color="text.secondary">
+                                {item.noteCount}
+                              </Typography>
+                            </Box>
+                          </Tooltip>
+                        </Stack>
+
+                        {/* Latest Note */}
+                        {item.latestNote && (
+                          <Box
+                            sx={{
+                              background: (theme) => `${theme.palette.primary.main}08`,
+                              p: 1.5,
+                              borderRadius: '6px',
+                              borderLeft: (theme) => `3px solid ${theme.palette.primary.main}`,
+                            }}
+                          >
                             <Typography
-                              component="span"
-                              variant="body2"
-                              sx={{ fontStyle: 'italic' }}
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{ display: 'block', mb: 0.5 }}
                             >
+                              Latest Note
+                            </Typography>
+                            <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
                               {item.latestNote.bodyPreview}
                             </Typography>
                           </Box>
                         )}
 
+                        {/* View Details Button */}
                         <Box>
                           <Link href={`/submissions/${item.id}`}>
                             <Button size="small">View Details →</Button>

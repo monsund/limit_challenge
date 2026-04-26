@@ -12,8 +12,16 @@ import {
   Autocomplete,
   FormControlLabel,
   Checkbox,
+  Collapse,
+  Chip,
+  Typography,
+  Divider,
+  IconButton,
 } from '@mui/material';
 import { UseQueryResult } from '@tanstack/react-query';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import { STATUS_OPTIONS } from '@/lib/utils/submission-utils';
 import { useRouter } from 'next/navigation';
@@ -49,6 +57,7 @@ export function SubmissionsFiltersComponent({
 }: SubmissionsFiltersProps) {
   const router = useRouter();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [expandAdvanced, setExpandAdvanced] = useState(false);
 
   const handleDateChange = (key: string, value: string) => {
     const fromDate = key === 'createdFrom' ? value : createdFrom;
@@ -63,19 +72,61 @@ export function SubmissionsFiltersComponent({
     updateFilter(key, value);
   };
 
+  // Count active filters
+  const activeFiltersCount = [
+    status ? 1 : 0,
+    companySearchInput ? 1 : 0,
+    selectedBroker ? 1 : 0,
+    createdFrom ? 1 : 0,
+    createdTo ? 1 : 0,
+    hasDocuments ? 1 : 0,
+    hasNotes ? 1 : 0,
+  ].reduce((a, b) => a + b, 0);
+
   return (
     <Stack spacing={2}>
-      <Card variant="outlined">
+      <Card
+        variant="outlined"
+        sx={{
+          '&:hover': {
+            borderColor: (theme) => `${theme.palette.primary.main}40`,
+          },
+        }}
+      >
         <CardContent>
-          <Stack spacing={2}>
-            {/* Row 1: Primary filters */}
-            <Stack direction={{ xs: 'column', sm: 'row', md: 'column' }} spacing={2}>
+          <Stack spacing={3}>
+            {/* Header with icon */}
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
+              <FilterListIcon sx={{ color: 'primary.main' }} />
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Filters
+              </Typography>
+              {activeFiltersCount > 0 && (
+                <Chip
+                  label={activeFiltersCount}
+                  size="small"
+                  color="primary"
+                  variant="filled"
+                  sx={{ ml: 'auto' }}
+                />
+              )}
+            </Box>
+
+            {/* Primary Filters */}
+            <Stack spacing={2}>
+              {/* Status */}
               <TextField
                 select
                 label="Status"
                 value={status}
                 onChange={(e) => updateFilter('status', e.target.value)}
                 fullWidth
+                size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                  },
+                }}
               >
                 {STATUS_OPTIONS.map((option) => (
                   <MenuItem key={option.value || 'all'} value={option.value}>
@@ -84,6 +135,7 @@ export function SubmissionsFiltersComponent({
                 ))}
               </TextField>
 
+              {/* Broker */}
               <Autocomplete
                 options={brokerQueryData?.results ?? []}
                 getOptionLabel={(option) => (typeof option === 'string' ? '' : option.name)}
@@ -97,76 +149,161 @@ export function SubmissionsFiltersComponent({
                   <TextField
                     {...params}
                     label="Broker"
+                    size="small"
                     error={brokerQuery.isError}
                     helperText={
                       brokerQuery.isError
-                        ? 'Failed to load brokers. Try again.'
+                        ? 'Failed to load brokers'
                         : brokerQuery.isLoading
                           ? 'Loading brokers...'
                           : ''
                     }
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                      },
+                    }}
                   />
                 )}
                 fullWidth
               />
 
+              {/* Company Search */}
               <TextField
                 label="Company search"
+                placeholder="Search by name or industry"
                 value={companySearchInput}
                 onChange={(e) => setCompanySearchInput(e.target.value)}
                 fullWidth
+                size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                  },
+                }}
               />
             </Stack>
 
-            {/* Row 2: Optional filters */}
-            <Stack direction={{ xs: 'column', md: 'column' }} spacing={2}>
-              <TextField
-                type="date"
-                label="Created From"
-                value={createdFrom}
-                onChange={(e) => handleDateChange('createdFrom', e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-              />
+            <Divider />
 
-              <TextField
-                type="date"
-                label="Created To"
-                value={createdTo}
-                onChange={(e) => handleDateChange('createdTo', e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-              />
+            {/* Advanced Filters Toggle */}
+            <Box display="flex" alignItems="center" justifyContent="space-between">
+              <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                Advanced Filters
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => setExpandAdvanced(!expandAdvanced)}
+                sx={{
+                  transform: expandAdvanced ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.3s ease',
+                }}
+              >
+                <ExpandMoreIcon fontSize="small" />
+              </IconButton>
+            </Box>
 
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={hasDocuments === 'true'}
-                    onChange={(e) => updateFilter('hasDocuments', e.target.checked ? 'true' : '')}
-                  />
-                }
-                label="Has Documents"
-                slotProps={{ typography: { color: 'text.secondary' } }}
-              />
+            {/* Advanced Filters Collapse */}
+            <Collapse in={expandAdvanced} timeout="auto" unmountOnExit>
+              <Stack spacing={2}>
+                {/* Date Range */}
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'text.secondary', mb: 1, display: 'block' }}
+                  >
+                    Created Date Range (Optional)
+                  </Typography>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                    <TextField
+                      type="date"
+                      label="From"
+                      value={createdFrom}
+                      onChange={(e) => handleDateChange('createdFrom', e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      size="small"
+                      fullWidth
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: '8px',
+                        },
+                      }}
+                    />
+                    <TextField
+                      type="date"
+                      label="To"
+                      value={createdTo}
+                      onChange={(e) => handleDateChange('createdTo', e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      size="small"
+                      fullWidth
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: '8px',
+                        },
+                      }}
+                    />
+                  </Stack>
+                </Box>
 
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={hasNotes === 'true'}
-                    onChange={(e) => updateFilter('hasNotes', e.target.checked ? 'true' : '')}
-                  />
-                }
-                label="Has Notes"
-                slotProps={{ typography: { color: 'text.secondary' } }}
-              />
-            </Stack>
+                {/* Checkbox Filters */}
+                <Box
+                  sx={{
+                    background: (theme) => `${theme.palette.primary.main}10`,
+                    p: 2,
+                    borderRadius: '8px',
+                    border: (theme) => `1px solid ${theme.palette.primary.main}20`,
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'text.secondary', mb: 1, display: 'block' }}
+                  >
+                    Content Filters (Optional)
+                  </Typography>
+                  <Stack spacing={1}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={hasDocuments === 'true'}
+                          onChange={(e) =>
+                            updateFilter('hasDocuments', e.target.checked ? 'true' : '')
+                          }
+                          size="small"
+                        />
+                      }
+                      label={<Typography variant="body2">Has Documents</Typography>}
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={hasNotes === 'true'}
+                          onChange={(e) => updateFilter('hasNotes', e.target.checked ? 'true' : '')}
+                          size="small"
+                        />
+                      }
+                      label={<Typography variant="body2">Has Notes</Typography>}
+                    />
+                  </Stack>
+                </Box>
+              </Stack>
+            </Collapse>
           </Stack>
         </CardContent>
       </Card>
 
-      <Box display="flex" justifyContent="flex-end">
-        <Button variant="outlined" size="small" onClick={() => router.push('/submissions')}>
-          Clear filters
+      {/* Action Buttons */}
+      <Box display="flex" justifyContent="center">
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<ClearIcon />}
+          onClick={() => router.push('/submissions')}
+          sx={{
+            borderRadius: '8px',
+          }}
+        >
+          Reset All
         </Button>
       </Box>
 

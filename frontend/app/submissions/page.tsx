@@ -95,7 +95,8 @@ export default function SubmissionsPage() {
             Submissions
           </Typography>
           <Typography color="text.secondary" variant="body2">
-            Use the filters below to search and organize submissions by status, broker, or company.
+            Search and organize submissions using filters for status, broker, company, date range,
+            and more.
           </Typography>
         </Box>
 
@@ -103,7 +104,7 @@ export default function SubmissionsPage() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr', lg: '300px 1fr' },
+            gridTemplateColumns: { xs: '1fr', sm: '1fr', lg: '340px 1fr' },
             gap: 2,
           }}
         >
