@@ -6,6 +6,8 @@ design, relational data modelling, and product-focused UI work.
 
 ## Challenge Overview
 
+**[▶ Watch the demo](https://drive.google.com/file/d/1jBdlKEJMGMSaDpYpPm7dJBq61NoZ2YWs/view?usp=drive_link)**
+
 Operations managers need a workspace to review broker-submitted opportunities. Build a lightweight
 tool that lets them browse incoming submissions, filter by business context, and inspect full
 details per record. Deliver a polished frontend experience backed by clean APIs.
