@@ -166,6 +166,36 @@ All design tokens are centralized in `lib/theme-types.ts` (type declarations) an
 
 Primary color: `#0f62fe` (IBM Blue), dark: `#0043ce`
 
+### Filter State Management Flow
+
+All filter state lives in the **URL** (via `searchParams`), not in React state. This makes filters shareable, bookmarkable, and back-button safe.
+
+```
+User interaction
+      │
+      ▼
+Local input state (companySearchInput)
+      │  1000ms debounce for text search
+      │  immediate for all other filters
+      ▼
+updateFilter(key, value)  ─── router.push() → URL searchParams
+      │
+      ▼
+useSubmissionsList(filters)  ─── React Query queryKey changes
+      │
+      ▼
+api-client  ─── GET /api/submissions/?status=...&broker_id=...
+      │
+      ▼
+Cached response → SubmissionsList renders
+```
+
+**Key behaviours:**
+- Changing any filter (except page) resets `page` back to `1`
+- Company search is debounced 1000ms to avoid excess API calls while typing
+- Local input state (`companySearchInput`) stays in sync with URL on back-button navigation via a `useEffect`
+- All query params are read from `searchParams` on each render — no stale local state
+
 ### Data Management
 
 **lib/hooks/useSubmissions.ts**
@@ -223,3 +253,34 @@ Primary color: `#0f62fe` (IBM Blue), dark: `#0043ce`
 - **Design System**: All shadows, gradients, and background colors centralized as typed MUI theme tokens — no hardcoded values in components
 - **Modularization**: Detail page split into 5 focused components under `submission-detail/`; page.tsx reduced to ~75 lines
 - **Skeleton Fidelity**: Both skeleton components (`SubmissionCardSkeleton`, `SubmissionDetailSkeleton`) structurally mirror their real counterparts
+
+## Scalability & Performance Considerations
+
+### Current Optimizations
+
+**Query Deduplication & Caching**
+- React Query automatically deduplicates identical requests within the stale time window
+- Company search debounce (1000ms) prevents excessive API calls during rapid typing
+- Pagination-aware queries ensure only necessary data is fetched
+
+**Component Optimization**
+- `React.memo()` on `SubmissionsFilters`, `SubmissionsList` prevents re-renders from parent prop changes
+- `useMemo()` in `SubmissionsPagination` caches page number calculations
+
+**Efficient State Management**
+- URL-driven filter state eliminates React state sync issues
+- Single source of truth prevents stale data and back-button bugs
+
+### Future Scalability Enhancements
+
+**1. Virtual Scrolling (for 100k+ submissions)**
+- Implement `react-window` or `react-virtual` to render only visible list items
+- Reduces DOM nodes from 1000+ to ~20-30 on-screen items
+- Significant memory and CPU savings for large datasets
+- Trade-off: More complex component logic
+
+**2. Infinite Scroll vs. Pagination**
+- Alternative: Replace pagination with intersection observer for auto-loading
+- Pros: Better UX, especially on mobile
+- Cons: Harder to jump to arbitrary pages, server must support offset pagination
+
