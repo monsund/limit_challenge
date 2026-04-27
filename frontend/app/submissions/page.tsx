@@ -13,7 +13,10 @@ export default function SubmissionsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const status = searchParams.get('status') || '';
+  const statusFromUrl = searchParams.get('status');
+  const status: SubmissionStatus =
+    statusFromUrl === null || statusFromUrl === '' ? 'all' : (statusFromUrl as SubmissionStatus);
+
   const brokerId = searchParams.get('brokerId') || '';
   const companyQuery = searchParams.get('companySearch') || '';
   const hasDocuments = searchParams.get('hasDocuments') || '';
@@ -27,12 +30,21 @@ export default function SubmissionsPage() {
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (value) {
-      params.set(key, value);
+    if (key === 'status') {
+      if (value === 'all') {
+        params.delete('status');
+      } else {
+        params.set('status', value);
+      }
     } else {
-      params.delete(key);
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
     }
 
+    // reset pagination
     if (key !== 'page') {
       params.delete('page');
     }
@@ -42,7 +54,7 @@ export default function SubmissionsPage() {
 
   const filters = useMemo(
     () => ({
-      status: (status as SubmissionStatus) || undefined,
+      status: status === 'all' ? undefined : status,
       brokerId: brokerId || undefined,
       companySearch: companyQuery || undefined,
       hasDocuments: hasDocuments || undefined,

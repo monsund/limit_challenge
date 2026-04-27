@@ -1,7 +1,7 @@
 import { SubmissionStatus, StatusColorType, PriorityColorType } from '@/lib/types';
 
 export const STATUS_OPTIONS: { label: string; value: SubmissionStatus | '' }[] = [
-  { label: 'All statuses', value: '' },
+  { label: 'All statuses', value: 'all' },
   { label: 'New', value: 'new' },
   { label: 'In Review', value: 'in_review' },
   { label: 'Closed', value: 'closed' },

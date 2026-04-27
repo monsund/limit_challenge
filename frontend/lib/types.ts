@@ -1,4 +1,4 @@
-export type SubmissionStatus = 'new' | 'in_review' | 'closed' | 'lost';
+export type SubmissionStatus = 'all' | 'new' | 'in_review' | 'closed' | 'lost';
 export type SubmissionPriority = 'high' | 'medium' | 'low';
 export type StatusColorType = 'info' | 'warning' | 'success' | 'error';
 export type PriorityColorType = 'error' | 'warning' | 'success';
