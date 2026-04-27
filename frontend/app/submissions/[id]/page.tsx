@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 
 import { useSubmissionDetail } from '@/lib/hooks/useSubmissions';
-import { ApiErrorState, SubmissionDetailSkeleton } from '@/app/components';
+import { ApiErrorState, SubmissionDetailSkeleton } from '@/components';
 import {
   SubmissionHeroCard,
   SubmissionContactsCard,
   SubmissionDocumentsCard,
   SubmissionNotesSection,
-} from '@/app/components/submission-detail';
+} from '@/components/submission-detail';
 
 export default function SubmissionDetailPage() {
   const params = useParams<{ id: string }>();

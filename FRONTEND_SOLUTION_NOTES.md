@@ -6,32 +6,7 @@
 
 ```
 frontend/
-├── app/
-│   ├── components/
-│   │   ├── submissions/
-│   │   │   ├── SubmissionsFilters.tsx      # Filter controls
-│   │   │   ├── SubmissionsList.tsx         # Submission cards + pagination
-│   │   │   └── index.ts                    # Barrel export
-│   │   ├── submission-detail/
-│   │   │   ├── InfoItem.tsx                # Atom: label/value/sub with email icon
-│   │   │   ├── SubmissionHeroCard.tsx      # Hero card: name, chips, 6-col info grid
-│   │   │   ├── SubmissionContactsCard.tsx  # Contacts: 2-col grid, avatar, icons
-│   │   │   ├── SubmissionDocumentsCard.tsx # Documents: bordered rows, docType chip
-│   │   │   ├── SubmissionNotesSection.tsx  # Notes: 3-col grid, left-border accent
-│   │   │   └── index.ts                    # Barrel export
-│   │   └── ui/
-│   │       ├── pagination/
-│   │       │   ├── SubmissionsPagination.tsx
-│   │       │   └── index.ts
-│   │       ├── errors/
-│   │       │   ├── ApiErrorState.tsx
-│   │       │   ├── ValidationErrorSnackbar.tsx
-│   │       │   └── index.ts
-│   │       ├── skeletons/
-│   │       │   ├── SubmissionCardSkeleton.tsx
-│   │       │   ├── SubmissionDetailSkeleton.tsx
-│   │       │   └── index.ts
-│   │       └── index.ts                    # UI barrel export
+├── app/                                    # Next.js App Router (routes & layout only)
 │   ├── submissions/
 │   │   ├── page.tsx                        # List page (filters + submissions)
 │   │   └── [id]/
@@ -40,6 +15,33 @@ frontend/
 │   ├── page.tsx
 │   ├── providers.tsx
 │   └── globals.css
+│
+├── components/                             # Reusable UI components
+│   ├── submissions/
+│   │   ├── SubmissionsFilters.tsx          # Filter controls
+│   │   ├── SubmissionsList.tsx             # Submission cards + pagination
+│   │   └── index.ts                        # Barrel export
+│   ├── submission-detail/
+│   │   ├── InfoItem.tsx                    # Atom: label/value/sub with email icon
+│   │   ├── SubmissionHeroCard.tsx          # Hero card: name, chips, 6-col info grid
+│   │   ├── SubmissionContactsCard.tsx      # Contacts: 2-col grid, avatar, icons
+│   │   ├── SubmissionDocumentsCard.tsx     # Documents: bordered rows, docType chip
+│   │   ├── SubmissionNotesSection.tsx      # Notes: 3-col grid, left-border accent
+│   │   └── index.ts                        # Barrel export
+│   ├── ui/
+│   │   ├── pagination/
+│   │   │   ├── SubmissionsPagination.tsx
+│   │   │   └── index.ts
+│   │   ├── errors/
+│   │   │   ├── ApiErrorState.tsx
+│   │   │   ├── ValidationErrorSnackbar.tsx
+│   │   │   └── index.ts
+│   │   ├── skeletons/
+│   │   │   ├── SubmissionCardSkeleton.tsx
+│   │   │   ├── SubmissionDetailSkeleton.tsx
+│   │   │   └── index.ts
+│   │   └── index.ts                        # UI barrel export
+│   └── index.ts                            # Components barrel export
 │
 ├── lib/
 │   ├── api-client.ts                       # Axios instance + helper functions
@@ -54,12 +56,18 @@ frontend/
 │   ├── constants/
 │   │   └── pagination.ts                   # PAGINATION.PAGE_SIZE constant
 │
+├── public/                                 # Static assets
 ├── .env.local                              # Local config (NEXT_PUBLIC_API_BASE_URL)
 ├── .env.example                            # Config template
 ├── package.json
 ├── tsconfig.json
 └── next.config.ts
 ```
+
+**Architecture**: Follows Next.js 13+ best practices with clear separation:
+- `app/` — Routes and layout only (App Router)
+- `components/` — Reusable UI components (at root level)
+- `lib/` — Utilities, hooks, and types
 
 ## Module Descriptions
 

@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useBrokerOptions } from '@/lib/hooks/useBrokerOptions';
 import { useSubmissionsList } from '@/lib/hooks/useSubmissions';
 import { SubmissionStatus } from '@/lib/types';
-import { SubmissionsFilters, SubmissionsList } from '@/app/components';
+import { SubmissionsFilters, SubmissionsList } from '@/components';
 
 export default function SubmissionsPage() {
   const router = useRouter();
