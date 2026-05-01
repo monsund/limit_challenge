@@ -36,6 +36,24 @@ npm run dev
 
 App will be available at `http://localhost:3000/submissions`
 
+## Troubleshooting
+
+**npm optional dependency errors on macOS:**
+
+If you encounter errors like `Cannot find native binding` or `Cannot find module '@tailwindcss/oxide-darwin-arm64'`, clear npm cache and reinstall:
+
+```bash
+cd frontend
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
+```
+
+Then restart the dev server:
+```bash
+npm run dev
+```
+
 ## API Endpoints
 
 - `GET /api/submissions/` — Paginated submissions with filters
