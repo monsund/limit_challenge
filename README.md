@@ -4,6 +4,16 @@
 
 A lightweight submission tracking tool built with Django REST Framework + Next.js. Browse submissions, filter by status/broker/company, and inspect detailed records.
 
+## Deployment
+
+**Live Deployment:**
+- **Backend**: Deployed on Render → [https://limit-challenge-4oku.onrender.com/api](https://limit-challenge-4oku.onrender.com/api)
+- **Frontend**: Deployed on Vercel → [https://limit-challenge.vercel.app](https://limit-challenge.vercel.app)
+
+**API Endpoints (Production):**
+- `GET /api/submissions` — List submissions with filters
+- `GET /api/brokers` — Broker options
+
 ## Getting Started
 
 ### Prerequisites
@@ -16,7 +26,7 @@ A lightweight submission tracking tool built with Django REST Framework + Next.j
 
 ```bash
 cd backend
-python -m venv .venv
+python -m venv .venv or python3 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
