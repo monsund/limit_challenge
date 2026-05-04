@@ -45,7 +45,7 @@ If you encounter errors like `Cannot find native binding` or `Cannot find module
 ```bash
 cd frontend
 npm cache clean --force
-rm -rf node_modules package-lock.json
+rm -rf .next node_modules package-lock.json
 npm install
 ```
 
